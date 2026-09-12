@@ -1,42 +1,48 @@
-# Name of the workflow shown in the GitHub Actions tab
+# ==============================================================================
+# Workflow Name: Displayed in the GitHub repository Actions tab
+# ==============================================================================
 name: CI
 
-# Trigger this workflow automatically on every push to the main branch
+# ==============================================================================
+# Trigger: Automatically runs on every push commit to the main branch
+# ==============================================================================
 on:
   push:
     branches: [ main ]
 
+# ==============================================================================
+# Jobs: Automated tasks executed on a GitHub-hosted virtual environment
+# ==============================================================================
 jobs:
-  # Single job that handles installing dependencies, testing, and building
   build-and-test:
-    # Run on a clean Ubuntu virtual machine provided by GitHub
+    # Runs the job on a clean, standard Ubuntu Linux runner
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Clone the repository files onto the runner machine
+      # Step 1: Check out and clone repository files onto the runner
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js 20 and cache dependencies for faster future runs
+      # Step 2: Set up Node.js runtime (v20) and enable npm dependency caching
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      # Step 3: Clean install exact dependencies from package-lock.json
+      # Step 3: Clean install exact project dependencies using package-lock.json
       - name: Install dependencies
         run: npm ci
 
-      # Step 4: Run the test suite to verify code works before building
+      # Step 4: Execute automated unit test suite (all 8 tests must pass)
       - name: Run tests
         run: npm test
 
-      # Step 5: Run the build script to generate the dist/ output folder
+      # Step 5: Execute project build script to output bundled assets into dist/
       - name: Build project
         run: npm run build
 
-      # Step 6: Save and archive the dist/ output as a downloadable artifact
+      # Step 6: Archive the dist/ output folder as a downloadable build artifact
       - name: Archive build artifact
         uses: actions/upload-artifact@v4
         with:
